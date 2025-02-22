@@ -83,7 +83,7 @@ const getUserData = async(req,res)=>{
           
           const user = await User.findById(tokenConvertId)
           if(!user){
-            return res.status(404).send("Token valid");
+            return res.status(404).send("Token not valid");
           }
           res.status(201).json({
             email : user.email,
