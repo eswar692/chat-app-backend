@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser()) 
 const route = require('./routes/routes')
 app.use(express.json());
-
+const cloudinary = require('cloudinary')
 
 
 app.use('/user',route)
@@ -23,7 +23,12 @@ app.use('/user',route)
 
 
 
-mongoose.connect(process.env.mongo_url)
+mongoose.connect(process.env.mongo_url,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }
+)
 .then(()=>{console.log('db connected')})
 
 

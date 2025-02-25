@@ -2,6 +2,8 @@ const User = require('../model/User')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
+const multer = require('multer')
+const cloudinary = require('cloudinary')
 
 
 const userRegister = async(req,res)=>{
