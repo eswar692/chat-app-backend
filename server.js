@@ -16,7 +16,7 @@ const cloudinary = require('cloudinary')
 
 app.use('/user',route)
 
-
+cloudinary.v2.config()
 
 
 

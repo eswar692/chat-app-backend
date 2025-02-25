@@ -30,6 +30,9 @@ const userSchema = new mongoose.Schema({
     profileSetup:{
         type:Boolean,
         default:false,   
+    },
+    public_id:{
+        type:String,
     }
 })
 
