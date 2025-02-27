@@ -4,6 +4,19 @@ require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const multer = require('multer')
 const cloudinary = require('cloudinary')
+const path = require("path");
+const fs = require('fs')
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/"); // Store files in 'uploads/' folder
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+    }
+});
+const upload = multer({ storage });
+
 
 
 const userRegister = async(req,res)=>{
@@ -105,4 +118,83 @@ const getUserData = async(req,res)=>{
             res.status(501).json('internal server error')        
     }
 }
-module.exports = {userRegister, userLogin,getUserData}
+
+const profileDataUpdate = async (req,res)=>{
+    const userId = req.userId
+    const {firstName,lastName,color,} = req.body
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+        {firstName,lastName,color,profileSetup:true},
+        { new: true, runValidators: true }
+    )
+    if(!user){
+        return res.status(402).json('user id not correct')
+    }
+    return res.status(201).json(user)
+}
+
+const profileImage = async(req,res)=>{
+    const userId= req.userId
+
+    const file = req.file
+   try {
+        const user = await User.findById(userId)
+        
+        
+
+            const result = await cloudinary.v2.uploader.upload(file.path)
+            user.image = result.secure_url;
+            user.public_id = result.public_id;
+           
+            await user.save()
+            fs.unlink(file.path, (err) => {
+                if (err) {
+                    console.error("File deletion failed:", err);
+                } else {
+                    console.log("File deleted successfully!");
+                }
+            });
+
+            res.status(201).json({user})
+
+    
+   } catch (error) {
+    
+    console.log(error)
+    res.status(501).json
+   }
+}
+
+
+const deleteProfileImage = async (req,res)=>{
+    const userId = req.userId
+    try {
+            const user = await User.findById(userId)
+        if(!user){
+            return res.status(402).json('user id not correct')
+        }
+        if(!user.image && !user.public_id) return res.status(404).json('image not there')
+        await cloudinary.v2.uploader.destroy(user.public_id)
+        user.image = ''
+        user.public_id = ''
+        await user.save()
+        return res.status(201).json('image delete succussfully')
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(501).json('server error ...')
+        
+    }
+}
+
+
+
+module.exports = {userRegister, 
+                  userLogin,
+                  getUserData,
+                  profileDataUpdate,
+                  upload,
+                  profileImage,
+                  deleteProfileImage
+                }
