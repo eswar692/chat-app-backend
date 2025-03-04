@@ -32,8 +32,11 @@ cloudinary.v2.config({
 
 mongoose.connect(process.env.mongo_url,
     {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
+        maxPoolSize: 50,
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 50000, // Default 30000, increase to 50000
+        socketTimeoutMS: 60000 // Increase timeout
     }
 )
 .then(()=>{console.log('db connected')})

@@ -24,7 +24,7 @@ const userRegister = async(req,res)=>{
     const {email,password} = req.body
     
 
-    const maxAge = 1000 * 60 *60
+    const maxAge = 1000 * 60 *60 *24
     
     const jwtFun = (_id)=>{
         return (
@@ -121,17 +121,23 @@ const getUserData = async(req,res)=>{
 
 const profileDataUpdate = async (req,res)=>{
     const userId = req.userId
-    const {firstName,lastName,color,} = req.body
-
-    const user = await User.findByIdAndUpdate(
-        userId,
-        {firstName,lastName,color,profileSetup:true},
-        { new: true, runValidators: true }
-    )
-    if(!user){
-        return res.status(402).json('user id not correct')
-    }
+    try {
+        const {firstName,lastName,color,} = req.body
+    
+        const user = await User.findByIdAndUpdate(
+            userId,
+            {firstName,lastName,color,profileSetup:true},
+            { new: true, runValidators: true }
+        )
+        if(!user){
+            return res.status(402).json('user id not correct')
+        }
     return res.status(201).json(user)
+    } catch (error) {
+        console.log(error)
+        res.status(501).json('internal server error') 
+        
+    }
 }
 
 const profileImage = async(req,res)=>{
@@ -188,6 +194,25 @@ const deleteProfileImage = async (req,res)=>{
     }
 }
 
+const logout = async(req,res)=>{
+    const userId = req.userId
+    try {
+        const user = await User.findById(userId)
+        if(!user) return res.status(404).json('User Not Found')
+        
+            res.clearCookie("jwt", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+              });
+              res.status(201).json('user logout successfully')
+        
+    } catch (error) {
+        console.log(error)
+        res.status(501).json('internal server error')       
+    }
+}
+
 
 
 module.exports = {userRegister, 
@@ -196,5 +221,6 @@ module.exports = {userRegister,
                   profileDataUpdate,
                   upload,
                   profileImage,
-                  deleteProfileImage
+                  deleteProfileImage,
+                  logout
                 }
