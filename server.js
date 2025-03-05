@@ -13,11 +13,12 @@ app.use(cors({
 
 
 const route = require('./routes/routes')
-
+const contactRoute = require('./routes/contactRoute')
 const cloudinary = require('cloudinary')
 
 
 app.use('/user',route)
+app.use('/search',contactRoute)
 
 cloudinary.v2.config({
     cloud_name:process.env.cloud_name,
