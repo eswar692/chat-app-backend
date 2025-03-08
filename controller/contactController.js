@@ -3,7 +3,7 @@ const User = require('../model/User')
 
 const searchContact =  async(req,res)=>{
     
-    const {userId} = req.body
+    const {userId} = req
     const {searchTerm} = req.body
     
 

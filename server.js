@@ -10,11 +10,10 @@ app.use(cors({
     origin: "http://localhost:5173", // Set to your frontend URL
     credentials: true  // Important for cookies!
 }));
-
-
 const route = require('./routes/routes')
 const contactRoute = require('./routes/contactRoute')
 const cloudinary = require('cloudinary')
+const socket = require('./socket')
 
 
 app.use('/user',route)
@@ -43,6 +42,8 @@ mongoose.connect(process.env.mongo_url,
 .then(()=>{console.log('db connected')})
 
 
-app.listen(3000,()=>{
+const server = app.listen(3000,()=>{
     console.log('server is running......')
 })
+
+socket(server)

@@ -22,7 +22,11 @@ const upload = multer({ storage });
 const userRegister = async(req,res)=>{
   
     const {email,password} = req.body
-    
+    const emailExist = await User.findOne({email})
+        if(emailExist){
+            console.log('email exist')
+            return res.status(401).json({message:"email already exist plase try another email"})
+        }
 
     const maxAge = 1000 * 60 *60 *24
     
@@ -36,6 +40,7 @@ const userRegister = async(req,res)=>{
         if(!email || !password){
             return res.status(402).json('credinicials required')
         }
+        
 
         const user =  User({email,password})
         await user.save()
@@ -53,7 +58,9 @@ const userRegister = async(req,res)=>{
 const userLogin =  async(req,res)=>{
     
     const {email,password} = req.body
-    
+    if(!email || !password){
+        return res.status(402).json({message:'credinicials required'})
+    }
 
     const maxAge = 1000 * 60 *60 *24
     
@@ -64,14 +71,13 @@ const userLogin =  async(req,res)=>{
     }
     
     try {
-        if(!email || !password){
-            return res.status(402).json('credinicials required')
-        }
+        
 
         const user =await  User.findOne({email})
-        const passwordCheck = bcrypt.compare(password,user.password)
-        if(!user || !passwordCheck){
-            return res.status(404).json('email and password are incorrect try again later ')
+        const passwordCheck = await bcrypt.compare(password,user.password)
+        if(!user ){
+            console.log(user,passwordCheck,password)
+            return res.status(404).json({meesage:'email and password are incorrect try again later '})
         }
 
         res.cookie('jwt', jwtFun(user._id),
@@ -81,7 +87,7 @@ const userLogin =  async(req,res)=>{
         
     } catch (error) {
         console.log(error)
-            res.status(501).json('internal server error')        
+            res.status(501).json({message:"Internal error"})        
     }
 }
 
@@ -101,6 +107,7 @@ const getUserData = async(req,res)=>{
             return res.status(404).send("Token not valid");
           }
           res.status(201).json({
+            id:user._id,
             email : user.email,
             firstName :user.firstName,
             lastName : user.lastName,
