@@ -1,5 +1,6 @@
 
-const {Server}= require('socket.io')
+const {Server}= require('socket.io');
+const Message = require('./model/Message');
 
 
 const socket = (server)=>{
@@ -23,6 +24,24 @@ const socket = (server)=>{
         }
       }
 
+      const sendMessage =async (message)=>{
+        const senderSocketId = userObj.get(message.sender)
+        const recipientSocketId = userObj.get(message.recipient)
+
+        const storeMessage = await Message.create(message)
+        const messageData = await Message.findById(storeMessage._id)
+        .populate('sender',"id email firstName LastName image color")
+        .populate('recipient',"id email firstName LastName image color")
+
+        if(recipientSocketId){
+          io.to(recipientSocketId).emit('recieveMessage',message)
+        }
+        if(senderSocketId){
+          io.to(senderSocketId).emit('recieveMessage',message)
+        }
+
+      }
+
       io.on("connection",(socket)=>{
         const userId = socket.handshake.query.userId
         if(userId){
@@ -31,6 +50,8 @@ const socket = (server)=>{
         }else{
             console.log("user id required")
         }
+
+        socket.on('sendMessage',sendMessage)
 
 
         socket.on('disconnect',()=>disConnect(socket))
