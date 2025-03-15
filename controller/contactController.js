@@ -8,21 +8,29 @@ const searchContact =  async(req,res)=>{
     
 
     try {
-        if(!userId && searchTerm){
+        if(!userId || !searchTerm){
             return res.status(402).json('userId required')
         }
-          const sanitariedText = searchTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-          const regex = new RegExp(sanitariedText,"i")     
+          const sanitizedText = searchTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+          const regex = new RegExp(`^${sanitizedText}`, 'i');  
 
         const user =await  User.find(
             {
                 $and:[
                     {_id:{$ne:userId}},
-                    {$or:[{firstName:regex},{lastName:regex},{email:regex}]}
+                    {
+                        $or:[
+                            {firstName:regex},
+                            {lastName:regex},
+                            {email:regex}
+
+                        ]
+                    }
                 ]
             }
-        )
-        if(!user){
+        ).lean();
+
+        if(user.length===0){
             return res.status(404).json("Search result not found")
         }
         return res.status(201).json({contacts:user})    
