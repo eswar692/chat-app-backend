@@ -14,10 +14,12 @@ const route = require('./routes/routes')
 const contactRoute = require('./routes/contactRoute')
 const cloudinary = require('cloudinary')
 const socket = require('./socket')
-
+const messageRoute = require('./routes/messageRoutes')
 
 app.use('/user',route)
 app.use('/search',contactRoute)
+app.use('/message',messageRoute)
+
 
 cloudinary.v2.config({
     cloud_name:process.env.cloud_name,
