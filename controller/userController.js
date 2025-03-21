@@ -32,7 +32,7 @@ const userRegister = async(req,res)=>{
     
     const jwtFun = (_id)=>{
         return (
-            jwt.sign(_id, process.env.secret_key, {expiresIn:maxAge})
+            jwt.sign({_id}, process.env.secret_key, {expiresIn:maxAge})
         )
     }
     

@@ -3,6 +3,7 @@ const { deleteAllMessage, getAllMessages, fileMessage} = require('../controller/
 const route = express.Router()
 const varifyToken = require('../middleware/tokenVerify')
 const multer = require('multer')
+const path = require('path')
 
 // const storage = multer.memoryStorage()
 const storage = multer.diskStorage({
