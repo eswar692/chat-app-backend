@@ -46,7 +46,7 @@ const fileMessage =async (req, res) => {
        const publicId = result.public_id;
        if(result){
         
-        fs.unlink(file.path, (err) => {
+        await fs.unlink(file.path, (err) => {
                         if (err) {
                             console.error("File deletion failed:", err);
                         } else {
