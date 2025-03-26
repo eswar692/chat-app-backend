@@ -7,7 +7,7 @@ require('dotenv').config()
 const cookieParser = require('cookie-parser')
 app.use(cookieParser()) 
 app.use(cors({
-    origin: "http://localhost:5173", // Set to your frontend URL
+    origin: "https://chat-app-alpha-weld.vercel.app/", // Set to your frontend URL
     credentials: true  // Important for cookies!
 }));
 const route = require('./routes/routes')
