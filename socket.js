@@ -7,7 +7,7 @@ const { default: mongoose } = require('mongoose');
 const socket = (server)=>{
     const io = new Server(server, {
         cors: {
-          origin: "http://localhost:5173", // React frontend URL
+          origin: "https://chat-app-alpha-weld.vercel.app/", // React frontend URL
           methods: ["GET", "POST"],
           credentials: true, // httpOnly Cookie must
         },
